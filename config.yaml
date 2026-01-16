@@ -1,0 +1,84 @@
+# Database Configuration
+database:
+  host: localhost
+  port: 5432
+  name: hybrid_query_db
+  user: postgres
+  password: postgres  # Change in production!
+  
+# Vector Index Configuration
+vector_index:
+  type: hnsw  # Options: hnsw, ivfflat
+  dimensions: 768  # Embedding dimension (BERT default)
+  hnsw:
+    m: 16           # Number of connections per layer
+    ef_construction: 64  # Size of dynamic candidate list
+    ef_search: 40   # Search parameter (higher = more accurate, slower)
+  ivfflat:
+    lists: 100      # Number of inverted lists
+    probes: 10      # Number of lists to search
+
+# Cost Model Parameters
+cost_model:
+  # Vector search costs (calibrated from benchmarks)
+  vector_distance_cost: 1.0      # Base cost per distance calculation
+  vector_comparison_cost: 0.1    # Cost per result comparison
+  
+  # SQL operation costs (PostgreSQL defaults)
+  seq_scan_cost: 1.0             # Sequential scan per page
+  random_page_cost: 4.0          # Random page access
+  cpu_tuple_cost: 0.01           # Process one tuple
+  cpu_index_tuple_cost: 0.005    # Process one index entry
+  cpu_operator_cost: 0.0025      # Execute one operator
+  
+  # Index parameters
+  default_statistics_target: 100  # Sample size for statistics
+  
+# Optimizer Configuration
+optimizer:
+  enable_vector_first: true      # Consider vector-first plans
+  enable_filter_first: true      # Consider filter-first plans
+  enable_hybrid: true            # Consider hybrid plans
+  plan_enumeration_limit: 10     # Max plans to generate
+  cost_estimation_samples: 1000  # Sample size for cost estimation
+
+# Benchmark Configuration
+benchmark:
+  datasets:
+    products:
+      path: data/datasets/products.csv
+      embedding_model: sentence-transformers/all-MiniLM-L6-v2
+      table_name: products
+    papers:
+      path: data/datasets/papers.csv
+      embedding_model: sentence-transformers/allenai-specter
+      table_name: research_papers
+    images:
+      path: data/datasets/images.csv
+      embedding_model: clip-ViT-B-32
+      table_name: images
+  
+  workloads:
+    - name: rag_queries
+      file: data/workloads/rag_queries.sql
+    - name: semantic_search
+      file: data/workloads/semantic_search.sql
+    - name: hybrid_search
+      file: data/workloads/hybrid_search.sql
+  
+  iterations: 5              # Repeat each query N times
+  warmup_runs: 2             # Warmup iterations (excluded from results)
+  timeout_seconds: 300       # Query timeout
+
+# Logging
+logging:
+  level: INFO                # DEBUG, INFO, WARNING, ERROR
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  file: logs/optimizer.log
+  
+# Paths
+paths:
+  data_dir: data
+  results_dir: benchmarks/results
+  logs_dir: logs
+  models_dir: models  # For cached embeddings

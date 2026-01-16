@@ -1,0 +1,47 @@
+# Core Dependencies
+psycopg2-binary==2.9.9      # PostgreSQL adapter
+pgvector==0.2.4             # pgvector Python client
+sqlparse==0.4.4             # SQL query parsing
+
+# Vector Search & Embeddings
+faiss-cpu==1.7.4            # FAISS for ANN search (CPU version)
+sentence-transformers==2.3.1 # Pre-trained embedding models
+numpy==1.26.3               # Numerical computing
+scikit-learn==1.4.0         # ML utilities (cosine similarity)
+
+# Deep Learning (for neural cost model - Member 5)
+torch==2.1.0                # PyTorch for neural networks
+
+# Optimization (for auto-calibration - Member 2)
+scipy==1.11.4               # Scientific optimization algorithms
+
+# Data Processing
+pandas==2.2.0               # Data manipulation
+pyyaml==6.0.1               # Configuration files
+
+# Visualization
+matplotlib==3.8.2           # Plotting
+seaborn==0.13.1             # Statistical visualization
+plotly==5.18.0              # Interactive plots
+streamlit==1.31.0           # Web UI framework
+
+# System Monitoring (for benchmarks - Member 7)
+psutil==5.9.8               # CPU/memory monitoring
+
+# Jupyter & Notebooks
+jupyter==1.0.0              # Jupyter notebook
+ipywidgets==8.1.1           # Interactive widgets
+notebook==7.0.7             # Notebook interface
+
+# Testing
+pytest==7.4.4               # Testing framework
+pytest-cov==4.1.0           # Coverage reports
+
+# Utilities
+tqdm==4.66.1                # Progress bars
+python-dotenv==1.0.0        # Environment variables
+tabulate==0.9.0             # Pretty-print tables
+
+# Optional: For production deployment
+# gunicorn==21.2.0          # WSGI server
+# flask==3.0.0              # Web API (if building UI)
