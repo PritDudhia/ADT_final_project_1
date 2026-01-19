@@ -1,0 +1,64 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+
+\begin{document}
+
+\title{Cost-Based Optimization for Hybrid SQL and Vector Similarity Queries}
+
+\author{
+\IEEEauthorblockN{Group Members: [Student 1, Student 2, Student 3, Student 4, Student 5, Student 6, Student 7]}
+\IEEEauthorblockA{\textit{School of Computer Science} \\
+\textit{University of Windsor}\\
+Windsor, Ontario, Canada}
+}
+
+\maketitle
+
+\section{Core Idea}
+
+Modern applications increasingly require queries that combine traditional SQL predicates with vector similarity search over high-dimensional embeddings, such as finding products matching specific price and category filters while being semantically similar to a reference item. Existing database systems handle these operations in isolation—traditional relational databases lack efficient vector search capabilities and cost models for embedding operations, while specialized vector databases provide limited SQL support and execute filters post-search without optimization. We propose a unified cost-based query optimizer that generates and evaluates multiple execution strategies for hybrid SQL-vector queries, including filter-first, vector-first, and interleaved approaches, selecting the optimal plan using machine learning-enhanced selectivity estimation and comprehensive cost models for both SQL operations and vector index structures. Our system addresses the critical gap in co-optimizing these heterogeneous operations, achieving significant performance improvements over existing approaches that treat SQL and vector operations independently.
+
+\section{Novelty Claim}
+
+Current database architectures operate under the assumption that SQL predicates and vector similarity operations should be processed sequentially and independently, either by applying SQL filters before vector search or vice versa, without considering the cost trade-offs of alternative execution strategies. Traditional relational databases such as PostgreSQL, despite recent pgvector extensions, lack specialized cost models for vector operations and default to brute-force distance calculations that scale poorly with result set sizes. Conversely, purpose-built vector databases like Pinecone, Milvus, and Weaviate optimize approximate nearest neighbor search using graph-based indexes such as HNSW and IVFFlat, but treat SQL predicates as simple post-processing filters applied in application code, missing opportunities for predicate pushdown and integrated optimization.
+
+Our work challenges this fundamental limitation by introducing the first unified cost-based optimizer that treats SQL predicates and vector similarity as co-optimizable operations within a single query plan generation framework. Unlike prior systems that commit to a fixed execution order, our optimizer dynamically generates multiple execution strategies—filter-first when SQL selectivity is high, vector-first when filters are broad, and hybrid interleaved execution for intermediate cases—and selects the lowest-cost plan using learned selectivity estimators that outperform traditional histogram-based approaches. This represents a paradigm shift from sequential processing to holistic optimization, enabling order-of-magnitude performance improvements on workloads combining structured filters with semantic search, a pattern increasingly common in e-commerce recommendations, healthcare patient matching, and document retrieval systems.
+
+\section{Related Work and Comparative Analysis}
+
+The closest work to our proposal is "RWalks: Random Walks as Attribute Diffusers for Filtered Vector Search" by Ait Aomar et al. \cite{rwalks}, accepted at SIGMOD 2025, which addresses filtered approximate nearest neighbor search by diffusing filter attributes through graph-based vector indexes. While their approach improves filtered vector search performance, it fundamentally assumes a vector-first execution model and focuses on enabling filters within the HNSW graph traversal rather than generating alternative execution plans. Our work differs critically: we generate multiple execution strategies including filter-first and hybrid approaches rather than committing to vector-first execution; we employ a comprehensive cost model to select among strategies rather than relying on heuristics; and we address multi-table queries with join ordering optimization, which RWalks does not support.
+
+We now position our work against seven additional recent publications. Heinrich et al. \cite{learned-cost} evaluate machine learning-based cardinality estimators for traditional SQL queries, finding improved accuracy but focusing exclusively on relational operations without addressing vector similarity predicates or approximate nearest neighbor search costs. We extend their learned estimation approach to hybrid queries by designing feature extractors capturing both SQL selectivity and vector index traversal costs. Liu et al. \cite{pg-vector} propose architectural changes to PostgreSQL for efficient vector search by decoupling index maintenance from query execution, but do not address query optimization or generate alternative execution plans based on query predicates. Voruganti and Özsu \cite{mirage} introduce MIRAGE-ANNS, a hybrid vector index combining HNSW and IVFFlat properties, evaluating this index in isolation without SQL predicates or addressing when to apply filters relative to vector search.
+
+Cai et al. \cite{nav-labels} propose jointly indexing categorical labels and vectors to accelerate filtered vector queries, but assume vector-first execution and do not address multi-table joins or complex SQL predicates involving ranges and pattern matching. Zhang et al. \cite{digra} introduce DIGRA for range-filtered queries, maintaining auxiliary structures for common filter predicates, but require pre-knowledge of filter columns and do not generalize to arbitrary SQL predicates or multi-table queries. Gao et al. \cite{quantization} develop vector compression techniques to reduce memory footprint during ANN search, optimizing purely the vector component without considering SQL query processing interaction. Wang et al. \cite{learned-card} evaluate machine learning approaches for selectivity estimation on traditional relational operators, not addressing vector predicates or measuring end-to-end query execution improvements.
+
+These works address either SQL optimization without vectors or vector search without SQL integration. None provide a unified cost-based framework for generating and selecting among multiple execution strategies for hybrid queries, which our contribution addresses.
+
+\section{Expected Outcomes and Impact}
+
+We will implement a complete query optimizer for PostgreSQL with pgvector, demonstrating measurable performance improvements on TPC-H augmented with vector similarity predicates. Our system generates three execution strategies and employs learned selectivity estimation for cost prediction. Expected contributions include quantifying cost model parameters for HNSW and IVFFlat indexes, demonstrating improved plan selection accuracy using machine learning, and providing open-source implementation. This work addresses immediate needs in e-commerce, healthcare, and recommendation systems while advancing database research on cost-based optimization for vector-augmented workloads.
+
+\begin{thebibliography}{00}
+\bibitem{rwalks} A. Ait Aomar et al., ``RWalks: Random Walks as Attribute Diffusers for Filtered Vector Search,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2025.
+
+\bibitem{learned-cost} R. Heinrich et al., ``How Good are Learned Cost Models, Really? Insights from Query Optimization Tasks,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2025.
+
+\bibitem{pg-vector} J. Liu et al., ``Fast Vector Search in PostgreSQL: A Decoupled Approach,'' in \textit{Proc. Conf. Innovative Data Systems Research (CIDR)}, 2026.
+
+\bibitem{mirage} S. Voruganti and T. Özsu, ``MIRAGE-ANNS: Mixed Approach Graph-based Indexing for Approximate Nearest Neighbor Search,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2025.
+
+\bibitem{nav-labels} Y. Cai et al., ``Navigating Labels and Vectors: A Unified Approach to Filtered Approximate Nearest Neighbor Search,'' in \textit{Proc. VLDB Endowment}, vol. 18, 2025.
+
+\bibitem{digra} F. Zhang et al., ``Efficient Dynamic Indexing for Range Filtered Approximate Nearest Neighbor Search,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2025.
+
+\bibitem{quantization} J. Gao et al., ``Practical and Asymptotically Optimal Quantization of High-Dimensional Vectors,'' in \textit{Proc. ACM SIGMOD Int. Conf. Management of Data}, 2025.
+
+\bibitem{learned-card} Q. Wang et al., ``Are We Ready For Learned Cardinality Estimation?'' in \textit{Proc. VLDB Endowment}, vol. 14, pp. 1640-1654, 2021.
+\end{thebibliography}
+
+\end{document}
