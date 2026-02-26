@@ -7,6 +7,7 @@ Integrates with vector cost model for hybrid query optimization.
 
 import logging
 from typing import Dict, List, Optional, Tuple
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -242,9 +243,6 @@ class SQLCostModel:
         logger.debug(f"Choose SeqScan: {seqscan_cost:.2f}")
         return 'seqscan', seqscan_cost
 
-
-# NumPy import for logarithm
-import numpy as np
 
 
 # Example usage
