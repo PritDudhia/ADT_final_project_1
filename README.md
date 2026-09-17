@@ -271,10 +271,7 @@ def estimate_vector_search_cost(n_vectors, k, index_type='ivfflat'):
 - [RAG Systems Best Practices](https://arxiv.org/abs/2005.11401)
 
 ---
-
-## 👤 Author
-
-**Your Name**  
+ 
 Advanced Database Systems - Winter 2026  
 University of Windsor
 
